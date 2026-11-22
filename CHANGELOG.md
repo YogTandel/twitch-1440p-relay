@@ -1,13 +1,15 @@
 # Changelog
 
-## Unreleased
+## 3.3.0 — 2026-11-22
 
 - One source now builds for Chromium **and** Firefox/Zen: `npm run build` produces `dist/twitch-1440p-relay-chrome-<version>.zip`, `dist/twitch-1440p-relay-firefox-<version>.zip`, and `dist/twitch-1440p-relay-firefox-<version>.xpi`.
 - Firefox/Zen support: MV3 event page instead of a service worker, `browser.*` with a `chrome.*` fallback, and content_scripts `world: "MAIN"` (Firefox 140+).
 - Firefox/Zen host permission onboarding: the popup shows **Allow access to Twitch** when the optional `https://www.twitch.tv/*` permission has not been granted, and the badge shows `!` until it is.
 - Relay CORS accepts `moz-extension://` and `safari-web-extension://` origins so **Test relay** works from the Firefox popup.
 - Cross-platform `npm run check` (no POSIX shell loop).
-- Release workflow publishes both browser packages.
+- Release workflow publishes two ZIPs (Chrome + Firefox) and the Firefox XPI.
+- Relay: Workers Logs observability enabled, so dashboard logs are stored.
+- CI: current GitHub Actions majors on Node 24 (Node 20 runtime deprecation).
 
 ## 3.2.0 — 2026-11-19
 

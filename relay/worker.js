@@ -19,7 +19,7 @@
 //     to Twitch GQL only; it is never logged or stored
 // ============================================================
 
-const VERSION = "3.2.0";
+const VERSION = "3.3.0";
 const TWITCH_GQL = "https://gql.twitch.tv/gql";
 const USHER_HOST = "usher.ttvnw.net";
 const CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";

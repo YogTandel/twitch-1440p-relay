@@ -38,7 +38,7 @@ test("Chromium package keeps the MV3 service worker manifest", () => {
         const bytes = readFileSync(file);
         assert.equal(bytes.readUInt32LE(0), 0x04034b50);
         assert.ok(bytes.includes(Buffer.from("manifest.json")));
-        assert.match(file, /twitch-1440p-relay-chrome-3\.2\.0\.zip$/);
+        assert.ok(file.endsWith(`twitch-1440p-relay-chrome-${chromeManifest.version}.zip`), file);
     } finally {
         rmSync(out, { recursive: true, force: true });
     }
