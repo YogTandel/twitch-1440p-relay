@@ -7,3 +7,9 @@ workers_dev = true
 # when issuing the playback token.
 [placement]
 region = "aws:us-east-1"
+
+# Store invocation + console logs so they are visible in the dashboard
+# (Workers & Pages -> twitch-relay -> Observability).
+[observability]
+enabled = true
+head_sampling_rate = 1
