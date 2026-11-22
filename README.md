@@ -213,6 +213,7 @@ Start with **Test relay** in the popup:
 | Logged in: `no` | Log in to Twitch in this browser. |
 | Max quality: `1080p (AUTHZ_…)` | Twitch still limits quality; the reason code says why. |
 | Badge shows `!` or status says **Twitch access needed** | Firefox/Zen host permission is not granted. Open the popup, click **Allow access to Twitch**, then reload the stream. |
+| Zen: **This add-on could not be installed because it appears to be corrupt** | You selected the Chromium `.zip` (Zen needs the `.xpi`), or Zen is still running with `xpinstall.signatures.required` at its default `true`. Use the XPI, restart Zen after the preference is set, or load `dist/firefox/manifest.json` through `about:debugging` (no signing needed). |
 
 If the test passes but the stream has no 1440p option, open DevTools on the stream page (`Cmd+Option+J` / `Ctrl+Shift+J`) and filter the console by `Twitch 2K`:
 
