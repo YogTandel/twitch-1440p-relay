@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.1 — 2026-11-22
+
+- Popup **relay** link and `homepage_url` now point at this repository (`YogTandel/twitch-1440p-relay`).
+- README badges, clone URL, Deploy button and release link point at this repository.
+- The gecko add-on ID (`twitch-1440p-relay@smaknomercy.github.io`) is unchanged so existing Zen/Firefox installs keep their settings.
+
 ## 3.3.0 — 2026-11-22
 
 - One source now builds for Chromium **and** Firefox/Zen: `npm run build` produces `dist/twitch-1440p-relay-chrome-<version>.zip`, `dist/twitch-1440p-relay-firefox-<version>.zip`, and `dist/twitch-1440p-relay-firefox-<version>.xpi`.

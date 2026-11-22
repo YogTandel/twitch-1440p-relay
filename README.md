@@ -6,9 +6,9 @@
 
 **Watch Twitch in 1440p from regions where it's capped at 1080p — no VPN.**
 
-[![test](https://github.com/smaknomercy/twitch-1440p-relay/actions/workflows/test.yml/badge.svg)](https://github.com/smaknomercy/twitch-1440p-relay/actions/workflows/test.yml)
-[![release](https://img.shields.io/github/v/release/smaknomercy/twitch-1440p-relay?color=9147ff)](https://github.com/smaknomercy/twitch-1440p-relay/releases)
-[![license](https://img.shields.io/github/license/smaknomercy/twitch-1440p-relay?color=9147ff)](LICENSE)
+[![test](https://github.com/YogTandel/twitch-1440p-relay/actions/workflows/test.yml/badge.svg)](https://github.com/YogTandel/twitch-1440p-relay/actions/workflows/test.yml)
+[![release](https://img.shields.io/github/v/release/YogTandel/twitch-1440p-relay?color=9147ff)](https://github.com/YogTandel/twitch-1440p-relay/releases)
+[![license](https://img.shields.io/github/license/YogTandel/twitch-1440p-relay?color=9147ff)](LICENSE)
 
 </div>
 
@@ -75,7 +75,7 @@ You need a free [Cloudflare](https://dash.cloudflare.com/sign-up) account.
 **Option A — command line** (needs [Node.js](https://nodejs.org) 20+):
 
 ```bash
-git clone https://github.com/smaknomercy/twitch-1440p-relay.git
+git clone https://github.com/YogTandel/twitch-1440p-relay.git
 cd twitch-1440p-relay/relay
 
 npx wrangler login                  # opens the browser, click Allow
@@ -92,7 +92,7 @@ node -e "console.log(require('crypto').randomBytes(16).toString('hex'))"
 
 **Option B — Deploy button** (experimental):
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/smaknomercy/twitch-1440p-relay/tree/main/relay)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/YogTandel/twitch-1440p-relay/tree/main/relay)
 
 Cloudflare copies the repo to your GitHub account, builds the relay and asks for `RELAY_KEY`. Replace the placeholder with a random key of at least 16 characters (`openssl rand -hex 16`); the relay refuses to run with the placeholder.
 
@@ -100,7 +100,7 @@ Either way, the relay must run with the US placement from `wrangler.toml`. If yo
 
 ### 2. Install the extension
 
-One source tree, two browser builds (three files). All are built by `npm run build` and attached to every [Release](https://github.com/smaknomercy/twitch-1440p-relay/releases):
+One source tree, two browser builds (three files). All are built by `npm run build` and attached to every [Release](https://github.com/YogTandel/twitch-1440p-relay/releases):
 
 | Package | Browsers | Use |
 |---|---|---|

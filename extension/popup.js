@@ -209,5 +209,5 @@ testBtn.addEventListener("click", async () => {
 
 setupLink.addEventListener("click", (e) => {
     e.preventDefault();
-    api.tabs.create({ url: "https://github.com/smaknomercy/twitch-1440p-relay#setup" });
+    api.tabs.create({ url: "https://github.com/YogTandel/twitch-1440p-relay#setup" });
 });
