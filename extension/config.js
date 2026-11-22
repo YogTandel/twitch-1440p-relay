@@ -1,14 +1,19 @@
 // ============================================================
 // Twitch 1440p Relay — shared settings helpers
 // ============================================================
-// Loaded by the popup, the background service worker and the
-// bridge content script. Settings live in chrome.storage.local:
+// Loaded by the popup, the background page/service worker and the
+// bridge content script. Settings live in storage.local:
 //   enabled  — boolean
 //   relayUrl — Worker URL without the key
 //   relayKey — RELAY_KEY value
+//
+// Firefox/Zen expose promise-based browser.*; Chrome exposes
+// chrome.*. Prefer browser.* and fall back to chrome.*.
 // ============================================================
 
 const TW2K = {
+    api: globalThis.browser ?? globalThis.chrome,
+
     // Split "https://x.workers.dev/?key=abc" into URL and key.
     splitUrl(raw) {
         const text = (raw || "").trim();
@@ -34,15 +39,16 @@ const TW2K = {
     },
 
     async load() {
-        const d = await chrome.storage.local.get(["enabled", "relayUrl", "relayKey", "proxyUrl"]);
+        const api = TW2K.api;
+        const d = await api.storage.local.get(["enabled", "relayUrl", "relayKey", "proxyUrl"]);
 
         // Migrate v3.1 settings: a single proxyUrl with ?key= in it.
         if (d.proxyUrl && !d.relayUrl) {
             const { url, key } = TW2K.splitUrl(d.proxyUrl);
             d.relayUrl = url;
             d.relayKey = d.relayKey || key;
-            await chrome.storage.local.set({ relayUrl: d.relayUrl, relayKey: d.relayKey });
-            await chrome.storage.local.remove("proxyUrl");
+            await api.storage.local.set({ relayUrl: d.relayUrl, relayKey: d.relayKey });
+            await api.storage.local.remove("proxyUrl");
         }
 
         return {

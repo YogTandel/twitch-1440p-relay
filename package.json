@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "for f in extension/*.js relay/*.js; do node --check \"$f\" || exit 1; done"
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "build:chrome": "node scripts/build.mjs chrome",
+    "build:firefox": "node scripts/build.mjs firefox"
   },
   "engines": {
     "node": ">=20"

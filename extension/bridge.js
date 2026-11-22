@@ -1,10 +1,12 @@
 // ============================================================
 // Twitch 1440p Relay — bridge (isolated world, document_start)
 // ============================================================
-// Reads settings from chrome.storage and exposes the full relay
-// URL to hook.js (MAIN world, no chrome.* access) via a data
+// Reads settings from storage.local and exposes the full relay
+// URL to hook.js (MAIN world, no extension APIs) via a data
 // attribute on <html>.
 // ============================================================
+
+const api = TW2K.api;
 
 TW2K.load().then(({ enabled, relayUrl, relayKey }) => {
     const root = document.documentElement;
@@ -23,7 +25,7 @@ TW2K.load().then(({ enabled, relayUrl, relayKey }) => {
 window.addEventListener("message", (e) => {
     if (e.source !== window || !e.data || e.data.__tw2k !== "status") return;
     const st = e.data.status || {};
-    chrome.runtime
+    api.runtime
         .sendMessage({
             action: "status",
             ok: !!st.ok,

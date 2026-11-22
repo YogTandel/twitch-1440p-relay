@@ -5,24 +5,29 @@ import vm from "node:vm";
 
 const SRC = readFileSync(new URL("../extension/config.js", import.meta.url), "utf8");
 
-function loadConfig(stored = {}) {
-    const data = { ...stored };
-    const chrome = {
-        storage: {
-            local: {
-                async get(keys) {
-                    return Object.fromEntries(keys.filter((k) => k in data).map((k) => [k, data[k]]));
-                },
-                async set(obj) {
-                    Object.assign(data, obj);
-                },
-                async remove(key) {
-                    delete data[key];
-                },
+function storageMock(data) {
+    return {
+        local: {
+            async get(keys) {
+                return Object.fromEntries(keys.filter((k) => k in data).map((k) => [k, data[k]]));
+            },
+            async set(obj) {
+                Object.assign(data, obj);
+            },
+            async remove(key) {
+                delete data[key];
             },
         },
     };
-    const ctx = vm.createContext({ chrome, URL });
+}
+
+function loadConfig(stored = {}, { browser = false, brokenChrome = false } = {}) {
+    const data = { ...stored };
+    const api = { storage: storageMock(data) };
+    const chrome = brokenChrome
+        ? { storage: { local: { get() { throw new Error("chrome.* must not win over browser.*"); } } } }
+        : api;
+    const ctx = vm.createContext({ chrome, browser: browser ? api : undefined, URL });
     vm.runInContext(SRC + "\nthis.TW2K = TW2K;", ctx);
     return { TW2K: ctx.TW2K, data };
 }
@@ -44,6 +49,16 @@ test("buildUrl adds key and extra params", () => {
     const u = new URL(TW2K.buildUrl("https://twitch-relay.me.workers.dev/", "abc", { channel: "x" }));
     assert.equal(u.searchParams.get("key"), "abc");
     assert.equal(u.searchParams.get("channel"), "x");
+});
+
+test("prefers browser.* over chrome.* (Firefox/Zen)", async () => {
+    const { TW2K } = loadConfig(
+        { enabled: true, relayUrl: "https://relay.example/" },
+        { browser: true, brokenChrome: true }
+    );
+    const cfg = await TW2K.load();
+    assert.equal(cfg.enabled, true);
+    assert.equal(cfg.relayUrl, "https://relay.example/");
 });
 
 test("migrates the old single proxyUrl setting", async () => {

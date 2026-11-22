@@ -29,10 +29,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build extension ZIP
-        run: |
-          cd extension
-          zip -r "../twitch-1440p-relay-extension-${GITHUB_REF_NAME}.zip" . -x ".*"
+      - name: Build Chrome and Firefox packages
+        run: npm run build
 
       - name: Release notes from CHANGELOG
         run: |
@@ -48,6 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" "twitch-1440p-relay-extension-${GITHUB_REF_NAME}.zip" \
+          gh release create "$GITHUB_REF_NAME" \
+            dist/twitch-1440p-relay-chrome-*.zip \
+            dist/twitch-1440p-relay-firefox-*.xpi \
             --title "$GITHUB_REF_NAME" \
             --notes-file notes.md

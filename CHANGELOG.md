@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- One source now builds for Chromium **and** Firefox/Zen: `npm run build` produces `dist/twitch-1440p-relay-chrome-<version>.zip` and `dist/twitch-1440p-relay-firefox-<version>.xpi`.
+- Firefox/Zen support: MV3 event page instead of a service worker, `browser.*` with a `chrome.*` fallback, and content_scripts `world: "MAIN"` (Firefox 140+).
+- Firefox/Zen host permission onboarding: the popup shows **Allow access to Twitch** when the optional `https://www.twitch.tv/*` permission has not been granted, and the badge shows `!` until it is.
+- Relay CORS accepts `moz-extension://` and `safari-web-extension://` origins so **Test relay** works from the Firefox popup.
+- Cross-platform `npm run check` (no POSIX shell loop).
+- Release workflow publishes both browser packages.
+
 ## 3.2.0 — 2026-11-19
 
 Update both the extension and the relay (`cd relay && npx wrangler deploy`).

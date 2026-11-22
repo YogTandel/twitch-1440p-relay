@@ -2,12 +2,17 @@
 // Twitch 1440p Relay — popup
 // ============================================================
 
+const api = TW2K.api;
+const TWITCH_ORIGINS = ["https://www.twitch.tv/*"];
+
 const toggle = document.getElementById("toggle");
 const urlInput = document.getElementById("relay-url");
 const keyInput = document.getElementById("relay-key");
 const keyReveal = document.getElementById("key-reveal");
 const statusEl = document.getElementById("status");
 const setupLink = document.getElementById("setup-link");
+const permissionsEl = document.getElementById("permissions");
+const grantBtn = document.getElementById("grant-btn");
 
 function flash(input) {
     input.focus();
@@ -15,9 +20,14 @@ function flash(input) {
     setTimeout(() => input.classList.remove("invalid"), 1500);
 }
 
+let hasPermission = true;
+
 function updateStatusText(enabled) {
     statusEl.classList.remove("active", "inactive");
-    if (enabled) {
+    if (!hasPermission) {
+        statusEl.textContent = "Twitch access needed";
+        statusEl.classList.add("inactive");
+    } else if (enabled) {
         statusEl.textContent = "On — refresh the stream to apply";
         statusEl.classList.add("active");
     } else {
@@ -26,6 +36,28 @@ function updateStatusText(enabled) {
     }
 }
 
+// Firefox/Zen: MV3 host permissions are optional. Ask from a click,
+// because permissions.request() requires a user gesture.
+async function checkPermission() {
+    try {
+        hasPermission = await api.permissions.contains({ origins: TWITCH_ORIGINS });
+    } catch {
+        hasPermission = true;
+    }
+    permissionsEl.hidden = hasPermission;
+    updateStatusText(toggle.checked);
+}
+
+grantBtn.addEventListener("click", async () => {
+    try {
+        hasPermission = await api.permissions.request({ origins: TWITCH_ORIGINS });
+    } catch {
+        hasPermission = false;
+    }
+    permissionsEl.hidden = hasPermission;
+    updateStatusText(toggle.checked);
+});
+
 // ---- Load ----
 
 TW2K.load().then(({ enabled, relayUrl, relayKey }) => {
@@ -33,6 +65,7 @@ TW2K.load().then(({ enabled, relayUrl, relayKey }) => {
     urlInput.value = relayUrl;
     keyInput.value = relayKey;
     updateStatusText(enabled);
+    checkPermission();
 });
 
 // ---- Save fields ----
@@ -42,11 +75,11 @@ urlInput.addEventListener("change", () => {
     const { url, key } = TW2K.splitUrl(urlInput.value);
     urlInput.value = url;
     if (key) keyInput.value = key;
-    chrome.storage.local.set({ relayUrl: url, relayKey: keyInput.value.trim() });
+    api.storage.local.set({ relayUrl: url, relayKey: keyInput.value.trim() });
 });
 
 keyInput.addEventListener("change", () => {
-    chrome.storage.local.set({ relayKey: keyInput.value.trim() });
+    api.storage.local.set({ relayKey: keyInput.value.trim() });
 });
 
 keyReveal.addEventListener("click", () => {
@@ -69,7 +102,7 @@ toggle.addEventListener("change", () => {
             return flash(keyInput);
         }
     }
-    chrome.storage.local.set({
+    api.storage.local.set({
         enabled,
         relayUrl: urlInput.value.trim(),
         relayKey: keyInput.value.trim(),
@@ -98,7 +131,7 @@ function addRow(label, value, cls) {
 
 async function getTwitchAuth() {
     try {
-        const c = await chrome.cookies.get({ url: "https://www.twitch.tv", name: "auth-token" });
+        const c = await api.cookies.get({ url: "https://www.twitch.tv", name: "auth-token" });
         return c ? "OAuth " + decodeURIComponent(c.value) : "";
     } catch {
         return "";
@@ -107,7 +140,7 @@ async function getTwitchAuth() {
 
 async function getActiveChannel() {
     try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const [tab] = await api.tabs.query({ active: true, currentWindow: true });
         const m = tab?.url?.match(/^https:\/\/www\.twitch\.tv\/([a-z0-9_]{1,25})(?:[/?#]|$)/i);
         return m ? m[1] : "";
     } catch {
@@ -176,5 +209,5 @@ testBtn.addEventListener("click", async () => {
 
 setupLink.addEventListener("click", (e) => {
     e.preventDefault();
-    chrome.tabs.create({ url: "https://github.com/smaknomercy/twitch-1440p-relay#setup" });
+    api.tabs.create({ url: "https://github.com/smaknomercy/twitch-1440p-relay#setup" });
 });

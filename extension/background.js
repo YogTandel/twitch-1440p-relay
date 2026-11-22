@@ -1,22 +1,31 @@
 // ============================================================
-// Twitch 1440p Relay — background service worker
+// Twitch 1440p Relay — background page (Firefox) / service worker (Chrome)
 // ============================================================
 // Toolbar badge: "ON" globally when enabled; per tab it shows the
 // quality Twitch granted on the last stream ("2K", "1080", "ERR").
 // ============================================================
 
-importScripts("config.js");
+// Chrome loads config.js with importScripts; Firefox maps it in background.scripts.
+if (typeof importScripts === "function") importScripts("config.js");
+
+const api = TW2K.api;
+const TWITCH_ORIGINS = ["https://www.twitch.tv/*"];
 
 async function refreshBadge() {
     const { enabled } = await TW2K.load();
-    chrome.action.setBadgeText({ text: enabled ? "ON" : "" });
-    chrome.action.setBadgeBackgroundColor({ color: "#9147FF" });
+    // Firefox/Zen make host permissions optional; without it no content
+    // script runs, so "ON" would be a lie.
+    const granted = await api.permissions.contains({ origins: TWITCH_ORIGINS }).catch(() => true);
+    api.action.setBadgeText({ text: !granted ? "!" : enabled ? "ON" : "" });
+    api.action.setBadgeBackgroundColor({ color: !granted ? "#E6A700" : "#9147FF" });
 }
 
-chrome.runtime.onInstalled.addListener(refreshBadge);
-chrome.runtime.onStartup.addListener(refreshBadge);
+api.runtime.onInstalled.addListener(refreshBadge);
+api.runtime.onStartup.addListener(refreshBadge);
+api.permissions.onAdded?.addListener(refreshBadge);
+api.permissions.onRemoved?.addListener(refreshBadge);
 
-chrome.storage.onChanged.addListener((changes, area) => {
+api.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && "enabled" in changes) refreshBadge();
 });
 
@@ -30,7 +39,7 @@ function heightBadge(h) {
     return String(h);
 }
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
+api.runtime.onMessage.addListener((msg, sender) => {
     if (msg?.action !== "status" || !sender.tab?.id) return;
     const tabId = sender.tab.id;
 
@@ -57,7 +66,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
         }
     }
 
-    chrome.action.setBadgeText({ tabId, text });
-    chrome.action.setBadgeBackgroundColor({ tabId, color });
-    chrome.action.setTitle({ tabId, title });
+    api.action.setBadgeText({ tabId, text });
+    api.action.setBadgeBackgroundColor({ tabId, color });
+    api.action.setTitle({ tabId, title });
 });

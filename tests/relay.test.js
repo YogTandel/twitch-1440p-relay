@@ -162,10 +162,12 @@ test("GET diagnostics support VODs", async () => {
     assert.equal(vars.vodID, "123456");
 });
 
-test("CORS allows twitch.tv and the extension, not other sites", async () => {
+test("CORS allows twitch.tv and browser extensions, not other sites", async () => {
     const origins = {
         "https://www.twitch.tv": "https://www.twitch.tv",
         "chrome-extension://abcdef": "chrome-extension://abcdef",
+        "moz-extension://1234-abcd": "moz-extension://1234-abcd",
+        "safari-web-extension://9876": "safari-web-extension://9876",
         "https://evil.example": null,
     };
     for (const [origin, expected] of Object.entries(origins)) {

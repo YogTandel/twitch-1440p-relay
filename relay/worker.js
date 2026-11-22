@@ -34,9 +34,15 @@ const TOKEN_QUERY =
     " }";
 
 // Twitch pages and the extension popup may call the relay from a browser.
+// Chrome/Edge use chrome-extension://, Firefox/Zen use moz-extension://,
+// Safari uses safari-web-extension://.
 function corsHeaders(request) {
     const origin = request.headers.get("Origin") || "";
-    const allowed = origin === "https://www.twitch.tv" || origin.startsWith("chrome-extension://");
+    const allowed =
+        origin === "https://www.twitch.tv" ||
+        origin.startsWith("chrome-extension://") ||
+        origin.startsWith("moz-extension://") ||
+        origin.startsWith("safari-web-extension://");
     return {
         ...(allowed ? { "Access-Control-Allow-Origin": origin } : {}),
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
