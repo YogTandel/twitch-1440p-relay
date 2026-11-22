@@ -47,7 +47,7 @@ test("Chromium package keeps the MV3 service worker manifest", () => {
 test("build produces an unpacked Firefox extension and XPI", () => {
     const out = mkdtempSync(join(tmpdir(), "tw2k-firefox-"));
     try {
-        const { dir, file, fileCount, manifest } = buildFirefox({ outDir: out });
+        const { dir, file, zip, fileCount, manifest } = buildFirefox({ outDir: out });
 
         assert.equal(manifest.version, chromeManifest.version);
         assert.ok(existsSync(join(dir, "manifest.json")));
@@ -62,6 +62,9 @@ test("build produces an unpacked Firefox extension and XPI", () => {
         const bytes = readFileSync(file);
         assert.equal(bytes.readUInt32LE(0), 0x04034b50);
         assert.ok(bytes.includes(Buffer.from("manifest.json")), "XPI contains manifest.json");
+        assert.match(file, /\.xpi$/);
+        assert.match(zip, /\.zip$/);
+        assert.deepEqual(readFileSync(zip), bytes, "ZIP and XPI carry the same Firefox package");
         assert.equal(fileCount, 12); // manifest + 7 extension files + 4 icons
     } finally {
         rmSync(out, { recursive: true, force: true });

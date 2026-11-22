@@ -184,7 +184,12 @@ export function buildChrome({ outDir = DIST } = {}) {
 
 export function buildFirefox({ outDir = DIST } = {}) {
     const files = listFiles(EXT);
-    return packageFiles(files, outDir, "firefox", firefoxManifest(), "xpi");
+    const out = packageFiles(files, outDir, "firefox", firefoxManifest(), "xpi");
+    // Same bytes with a .zip name: easier to unzip for `about:debugging`,
+    // while the .xpi is what Firefox/Zen installs.
+    const zip = out.file.replace(/\.xpi$/, ".zip");
+    copyFileSync(out.file, zip);
+    return { ...out, zip };
 }
 
 export function buildAll({ outDir = DIST } = {}) {
@@ -206,5 +211,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         console.log(`${name} ${out.manifest.version}: ${out.fileCount} files`);
         console.log(`  unpacked: ${out.dir}`);
         console.log(`  package:  ${out.file}`);
+        if (out.zip) console.log(`  package:  ${out.zip}`);
     }
 }

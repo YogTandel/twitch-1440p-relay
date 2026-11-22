@@ -100,12 +100,13 @@ Either way, the relay must run with the US placement from `wrangler.toml`. If yo
 
 ### 2. Install the extension
 
-One source tree, two packages. Both are built by `npm run build` and attached to every [Release](https://github.com/smaknomercy/twitch-1440p-relay/releases):
+One source tree, two browser builds (three files). All are built by `npm run build` and attached to every [Release](https://github.com/smaknomercy/twitch-1440p-relay/releases):
 
-| Package | Browsers |
-|---|---|
-| `twitch-1440p-relay-chrome-<version>.zip` | Chrome, Edge, Brave, Opera, Vivaldi (Manifest V3, service worker) |
-| `twitch-1440p-relay-firefox-<version>.xpi` | Firefox 140+, Zen, LibreWolf, Waterfox (Manifest V3, event page, `world: "MAIN"`) |
+| Package | Browsers | Use |
+|---|---|---|
+| `twitch-1440p-relay-chrome-<version>.zip` | Chrome, Edge, Brave, Opera, Vivaldi | Unzip → **Load unpacked** |
+| `twitch-1440p-relay-firefox-<version>.zip` | Firefox 140+, Zen, LibreWolf, Waterfox | Unzip → **Load Temporary Add-on** |
+| `twitch-1440p-relay-firefox-<version>.xpi` | Firefox 140+, Zen, LibreWolf, Waterfox | Install/permanent |
 
 #### Chromium: Chrome, Edge, Brave, Opera, Vivaldi
 
@@ -120,10 +121,11 @@ Firefox MV3 makes `https://www.twitch.tv/*` an **optional** host permission. The
 
 **Option A — temporary (any Firefox/Zen):**
 
-1. Open `about:debugging#/runtime/this-firefox` → **This Firefox** → **Load Temporary Add-on…**
-2. Pick `manifest.json` from `dist/firefox` (or from the unzipped release).
-3. Open the popup → **Allow access to Twitch** → reload the stream.
-4. Temporary add-ons disappear when the browser restarts.
+1. Download `twitch-1440p-relay-firefox-*.zip` and unzip it, or clone this repo and use `dist/firefox`.
+2. Open `about:debugging#/runtime/this-firefox` → **This Firefox** → **Load Temporary Add-on…**
+3. Pick `manifest.json` from the unzipped folder.
+4. Open the popup → **Allow access to Twitch** → reload the stream.
+5. Temporary add-ons disappear when the browser restarts.
 
 **Option B — permanent in Zen, LibreWolf, Waterfox, Firefox Developer Edition/ESR:**
 
@@ -236,9 +238,9 @@ You can also check the relay without the extension: open `https://twitch-relay.<
 ```bash
 npm run check          # syntax check (Windows and POSIX)
 npm test               # relay and extension tests (node:test, no dependencies)
-npm run build          # both packages + unpacked folders under dist/
+npm run build          # Chrome ZIP, Firefox ZIP + XPI, unpacked folders under dist/
 npm run build:chrome   # dist/twitch-1440p-relay-chrome-<version>.zip + dist/chrome/
-npm run build:firefox  # dist/twitch-1440p-relay-firefox-<version>.xpi + dist/firefox/
+npm run build:firefox  # dist/twitch-1440p-relay-firefox-<version>.{zip,xpi} + dist/firefox/
 ```
 
 `extension/manifest.json` is the Chromium manifest and the single source of truth. The build derives the Firefox manifest from it: it replaces `background.service_worker` with `background.scripts` (`config.js`, then `background.js`) and adds the gecko ID. All scripts use `browser.*` when the browser provides it and fall back to `chrome.*`, so the same code runs on both engines.

@@ -47,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            dist/twitch-1440p-relay-chrome-*.zip \
+            dist/twitch-1440p-relay-*.zip \
             dist/twitch-1440p-relay-firefox-*.xpi \
             --title "$GITHUB_REF_NAME" \
             --notes-file notes.md
